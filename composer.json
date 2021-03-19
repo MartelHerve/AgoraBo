@@ -1,4 +1,7 @@
 {
+    "name": "vendor/agora",
+    "description": "twig pour agoraBo",
+
     "require": {
         "twig/twig": "^2.0"
     }

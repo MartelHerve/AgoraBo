@@ -10,7 +10,7 @@ else {
 switch ($action) {
 
     case 'demanderConnexion': {
-        require 'vue/v_connexion.php';
+        echo $twig->render('connexion.html.twig');
         break;
     }
       
@@ -18,11 +18,13 @@ switch ($action) {
         // vérifier si l'utilisateur existe avec ce mot de passe
         $utilisateur = $db->getUnMembre($_POST['txtLogin'],$_POST['hdMdp']);
         // si l'utilisateur n'existe pas
+        var_dump($utilisateur);
+        var_dump($_POST['txtLogin']);
+
         if (!$utilisateur){
             // positionner le message d'erreur $erreur
             $erreur = 'Utilisateur et/ou mot de passe non reconnu';
-            // inclure la vue correspondant au formulaire d'authentification
-             require 'vue/v_connexion.php';
+            echo $twig->render('connexion.html.twig', array('erreur' => $erreur));
         } else {
             // créer trois variables de session pour id utilisateur, nom et prénom
             $_SESSION['idUtilisateur'] = $utilisateur->idMembre;

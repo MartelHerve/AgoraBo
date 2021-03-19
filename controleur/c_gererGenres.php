@@ -13,6 +13,7 @@
 
 	$idGenreModif = -1;		// positionné si demande de modification
 	$notification = 'rien';	// pour notifier la mise à jour dans la vue
+	$idGenreNotif = -1;		//positionné si mise à jour dans la vue
 
 	// selon l'action demandée on réalise l'action 
 	switch($action) {
@@ -46,7 +47,16 @@
 	}
 		
 	// l' affichage des genres se fait dans tous les cas	
-	$tbGenres  = $db->getLesGenres();		
-	require 'vue/v_lesGenres.php';
+	$tbMembres = $db->getLesMembres();
+	$tbGenres = $db->getLesGenresComplet();
+	echo $twig->render('lesGenres.html.twig', array(
+		'menuActif' => 'Jeux',
+		'tbGenres' => $tbGenres,
+		'tbMembres' => $tbMembres,
+		'idGenreModif' => $idGenreModif,
+		'idGenreNotif' => $idGenreNotif,
+		'notification' => $notification
+		));
+
 
 	?>

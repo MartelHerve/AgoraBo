@@ -30,7 +30,8 @@ MAIN CONTENT
                                qui est mise à ' ' avant transmission au serveur pour ne pas envoyer le mdp en clair
           hex_sha512 : fonction javascript de hachage sha512 avec retour du résultat en hexadecimal
        -->
-                <button class="btn btn-theme btn-block" type="submit" name="cmdAction" value="validerConnexion" title="Se connecter" onclick="document.getElementById('hdMdp').value =
+                <button class="btn btn-theme btn-block" type="submit" name="cmdAction" value="validerConnexion"
+                 title="Se connecter" onclick="document.getElementById('hdMdp').value =
                         hex_sha512(document.getElementById('txtMdp').value);document.getElementById('txtMdp').value = ' ';">
                     <i class="fa fa-lock"></i> Se connecter</button>
                 <!--  champ caché pour le mot de passe haché -->

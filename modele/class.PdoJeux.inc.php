@@ -566,7 +566,7 @@ class PdoJeux
             $requete_prepare = PdoJeux::$monPdo->prepare(
                 'SELECT idMembre, prenomMembre, nomMembre, mdpMembre, selMembre  
                  FROM membre 
-                 WHERE loginMembre = :loginMembre;'
+                 WHERE loginMembre = :loginMembre'
             );
             // associer les valeurs aux paramètres
             $requete_prepare->bindParam(':loginMembre', $loginMembre, PDO::PARAM_STR);
@@ -578,13 +578,57 @@ class PdoJeux
                 // le mot de passe transmis par le formulaire est le hash du mot de passe saisi
                 // le mot de passe enregistré dans la base doit correspondre au hash du (hash transmis concaténé au sel)
                 $mdpHashe = hash('SHA512', $mdpMembre . $utilisateur->selMembre);
+                var_dump($mdpHashe);
                 if ($mdpHashe == $utilisateur->mdpMembre) {
                     //utilisateur autorisé
                     //créer les variables de session pour mémoriser l'utilisateur connecté
+                    
                     return $utilisateur;
                 }
             }
             return null;
+        } catch (PDOException $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>'
+                . $e->getmessage() . '</p></div>');
+        }
+    }
+    /**
+     * Retourne tous les genres sous forme d'un tableau d'objets
+     *    avec également le nombre de jeux de ce genre
+     *
+     * @return le tableau d'objets  (Genre)
+     */
+    public function getLesGenresComplet()
+    {
+        $requete =  'SELECT G.idGenre as identifiant, G.libGenre as libelle, G.idSpecialiste AS idSpecialiste, CONCAT(M.prenomMembre, " ", M.nomMembre)  AS nomSpecialiste, 
+         (SELECT COUNT(refJeu) FROM jeu_video AS J WHERE J.idGenre = G.idGenre) AS nbJeux 
+      FROM genre AS G
+      LEFT OUTER JOIN membre  AS M ON G.idSpecialiste = M.idMembre
+      ORDER BY G.libGenre';
+        try {
+            $resultat = PdoJeux::$monPdo->query($requete);
+            $tbGenres  = $resultat->fetchAll();
+            return $tbGenres;
+        } catch (PDOException $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>'
+                . $e->getmessage() . '</p></div>');
+        }
+    }
+
+    /**
+     * Retourne l'identifiant et le nom complet de toutes les Membres sous forme d'un tableau d'objets 
+     * 
+     * @return le tableau d'objets   
+     */
+    public function getLesMembres()
+    {
+        $requete =  'SELECT idMembre as identifiant, CONCAT(prenomMembre, " ", nomMembre)  AS libelle 
+            FROM membre 
+            ORDER BY nomMembre';
+        try {
+            $resultat = PdoJeux::$monPdo->query($requete);
+            $tbMembres  = $resultat->fetchAll();
+            return $tbMembres;
         } catch (PDOException $e) {
             die('<div class = "erreur">Erreur dans la requête !<p>'
                 . $e->getmessage() . '</p></div>');
