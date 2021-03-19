@@ -46,3 +46,10 @@ a.userAgo {
 	color: #4ECDC4;
 	font-size: 120%;
 }
+
+.erreurCnx
+{
+    display:block;
+    color: red;
+    font-weight:bold;
+}

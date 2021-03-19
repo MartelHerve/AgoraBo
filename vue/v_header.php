@@ -42,8 +42,16 @@
       <!--logo end-->
       <div class="top-menu">
         <ul class="nav pull-right top-menu">
-          <a href="" class="userAgo">Jean Dupont</a>
-          <li><a class="logout" href="login.html">Logout</a></li>
+          <?php
+          // Si aucun utilisateur connecté, on affiche la demande de connexion
+          if (!isset($_SESSION['idUtilisateur'])) {
+            echo '<li><a class="logout" href="index.php?uc=connexion&action=demanderConnexion">Se connecter</a></li>';
+          } else {
+            echo '<a href="" class="userAgo">' . $_SESSION["prenomUtilisateur"] . ' ' . $_SESSION["nomUtilisateur"] . '</a>';
+            echo '<li><a class="logout" href="index.php?uc=deconnexion&action=demanderDeconnexion">Se déconnecter</a></li>';
+          }
+          ?>
+
         </ul>
       </div>
     </header>

@@ -446,7 +446,7 @@ class PdoJeux
     //==============================================================================
 
     /**
-       * Retourne tous les Jeux sous forme d'un tableau d'objets 
+     * Retourne tous les Jeux sous forme d'un tableau d'objets 
      * 
      * @return array le tableau d'objets  (Jeu)
      */
@@ -482,16 +482,16 @@ class PdoJeux
             $requete_prepare = PdoJeux::$monPdo->prepare("INSERT INTO Jeu_video "
                 . "(refJeu, nom, idGenre, idPlateforme, idPegi, prix, dateParution, idMarque) "
                 . "VALUES (:ref, :nom, :genre, :plateforme, :pegi, :prix, :dateParution, :marque) ");
-                $requete_prepare->bindParam(':ref', $jeu->ref);
-                $requete_prepare->bindParam(':nom', $jeu->nom);
-                $requete_prepare->bindParam(':dateParution',$jeu->dateParution);
-                $requete_prepare->bindParam(':prix',$jeu->prix);
-                $requete_prepare->bindParam(':genre',$jeu->genre);
-                $requete_prepare->bindParam(':plateforme',$jeu->plateforme);
-                $requete_prepare->bindParam(':marque',$jeu->marque);
-                $requete_prepare->bindParam(':pegi',$jeu->pegi);
+            $requete_prepare->bindParam(':ref', $jeu->ref);
+            $requete_prepare->bindParam(':nom', $jeu->nom);
+            $requete_prepare->bindParam(':dateParution', $jeu->dateParution);
+            $requete_prepare->bindParam(':prix', $jeu->prix);
+            $requete_prepare->bindParam(':genre', $jeu->genre);
+            $requete_prepare->bindParam(':plateforme', $jeu->plateforme);
+            $requete_prepare->bindParam(':marque', $jeu->marque);
+            $requete_prepare->bindParam(':pegi', $jeu->pegi);
 
-                $requete_prepare->execute();
+            $requete_prepare->execute();
             // récupérer l'identifiant crée
             return $jeu->ref;
         } catch (Exception $e) {
@@ -546,5 +546,48 @@ class PdoJeux
                 . $e->getmessage() . '</p></div>');
         }
     }
-    
+
+    //==============================================================================
+    //
+    //  METHODES POUR LA GESTION DES MEMBRES
+    //
+    //==============================================================================
+    /**
+     * Retourne l'identifiant, le nom et le prénom de l'utilisateur correspondant au compte et mdp
+     *       
+     * @param string $compte  le compte de l'utilisateur    
+     * @param string $mdp  le mot de passe de l'utilisateur    
+     * @return  ?object  l'objet ou null si ce membre n'existe pas
+     */
+    public function getUnMembre(string $loginMembre, string $mdpMembre): ?object
+    {
+        try {
+            // préparer la requête
+            $requete_prepare = PdoJeux::$monPdo->prepare(
+                'SELECT idMembre, prenomMembre, nomMembre, mdpMembre, selMembre  
+                 FROM membre 
+                 WHERE loginMembre = :loginMembre;'
+            );
+            // associer les valeurs aux paramètres
+            $requete_prepare->bindParam(':loginMembre', $loginMembre, PDO::PARAM_STR);
+            // exécuter la requête
+            $requete_prepare->execute();
+            // récupérer l'objet   
+            if ($utilisateur = $requete_prepare->fetch()) {
+                // vérifier le mot de passe
+                // le mot de passe transmis par le formulaire est le hash du mot de passe saisi
+                // le mot de passe enregistré dans la base doit correspondre au hash du (hash transmis concaténé au sel)
+                $mdpHashe = hash('SHA512', $mdpMembre . $utilisateur->selMembre);
+                if ($mdpHashe == $utilisateur->mdpMembre) {
+                    //utilisateur autorisé
+                    //créer les variables de session pour mémoriser l'utilisateur connecté
+                    return $utilisateur;
+                }
+            }
+            return null;
+        } catch (PDOException $e) {
+            die('<div class = "erreur">Erreur dans la requête !<p>'
+                . $e->getmessage() . '</p></div>');
+        }
+    }
 }
